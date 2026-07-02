@@ -1,9 +1,9 @@
 import numpy as np
 
-#Find divisors of N, except for very small or very large divisors
-#Ensures at least 'min_divisors' divisors are found
-#if not, decrement iteratelly N until enough divisors are found
-#Returns adjusted N and list of divisors
+'''Find divisors of N, except for very small or very large divisors
+Ensures at least 'min_divisors' divisors are found
+if not, decrement iteratelly N until enough divisors are found
+Returns adjusted N and list of divisors'''
 
 
 def find_divisors(N, min_divisors):
