@@ -2,35 +2,36 @@ import numpy as np
 from module_show_matrix import show_matrix # type: ignore
 
 '''
-Blocking algorithm per calcolare varianza di un array di dati con correlazione:
-divide l'arrauy in blocchi, calcola la media dei blocchi (perdita di autocorrelazione)
-calcola la varianza delle medie
-calcola la media delle varianze ---> ritorna varianza dei blocchi scorrelati
+IN: DATA ARRAY; OUT: MEAN VARIANCE
+Blocking algorithm used to calculate variance of an array with correlated values:
+splits the arrays into blocks, calculates the mean f each block (autocorrelation loss)
+calculates the variance of the means
+gets the mean variance of the means ---> return variance of uncorrelated blocks
 '''
 
 def blocking(data):
-    N = len(data)                       #numero di estrazioni
-    base=2                              #seleziona la base del logaritmo (chopping dei blocchi)
-    k = int(np.log(N)/np.log(base))     #esponente massimo del chopping (potenze di "base") t.c. base^k <= N
-    if k < 2:                           #controllo k positivo e sufficiente a fare almeno un chopping
+    N = len(data)                       #number of values
+    base=2                              #selects the logarithm base (number of chopping points each step)
+    k = int(np.log(N)/np.log(base))     #max exponent for selected chopping method, so that base^k <= N
+    if k < 2:                           #check positivity of k and sufficient to make at least 1 chopping
         print(f"Data length: {N}, base: {base}, k: {k}")
         raise ValueError("Data length must be at least \"base\" (enough for 1 block).")
-    variance = np.zeros(k-1)   #k-1 o k???         #array per salvare varianza ad ogni iterazione
+    variance = np.zeros(k-1)   #k-1 o k???         # variance is saved in this array at every step
     mu = np.mean(data)
     
-    #print(f"N: {N}, k: {k}, mu: {mu}")                 PARAMETRI DELL'ALGORITMO DI BLOCKING: NUMERO DI DATI, NUMERO PASSI DI BISEZIONE, MEDIA DEI DATI
+    #print(f"N: {N}, k: {k}, mu: {mu}")                BLOCKING PARAMETERS: NUMBER OF DATA, NUMBER  OF CHOPPING STEPS, MEAN OF THE DATA
     for l in range(1,k):                #runna sulle potenze della base
         i=base**l
-        cut_point = N % i               #taglio di N per avere multipli delle potenze di "base"
-        n=N - cut_point                 #nuova lunghezza dei dati
-        num_blocks = n // i             #numero di blocchi (colonne)
+        cut_point = N % i               #removes the excess data to have regular bins (multiple of base)
+        n=N - cut_point                 #new data lenght
+        num_blocks = n // i             #number of blocks (coloumns)
         mean_blocks = np.zeros(num_blocks)
-        binned_data=np.reshape(data[cut_point:], (i, num_blocks))   #reshape dei dati in n/i blocchi di i=2^l elementi
+        binned_data=np.reshape(data[cut_point:], (i, num_blocks))   #reshapes data in n/i blocks of i=2^l elements
         #print(f"iteration {l}: shape={np.shape(binned_data)}, points={n}/{len(data)}")  #control for debug
         #show_matrix(binned_data)
 
-        mean_blocks = np.mean(binned_data, axis=0)  #calcolo della media dei blocchi (colonne)
-        variance[l-1] = np.var(mean_blocks, ddof=1) #calcolo della varianza delle medie dei blocchi
+        mean_blocks = np.mean(binned_data, axis=0)  #makes mean of each block (coloumns)
+        variance[l-1] = np.var(mean_blocks, ddof=1) #makes variance of the block means
         #print(f"Variance at step {l}: {variance[l-1]}, {len(variance)}")   #control for debug
         #print(f"Block {j}/{num_blocks-1} data: {binned_data[:,j]},\n mean= {mu_blocks[j]}")   #control for debug (run on j missing)
 
