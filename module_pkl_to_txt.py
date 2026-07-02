@@ -3,8 +3,10 @@ import sys
 import pprint
 
 '''
-Prende in input un file .pkl (con percorso) ed una destinazione .txt
-Rende leggibili i file .pkl, convertendoli in .txt
+IN: .pkl file (+origin path), output path
+OUT: .txt file (at output path)
+
+Converts .pkl files into .txt
 '''
 def pkl_to_txt(input_file, output_path):
     try:
